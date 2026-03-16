@@ -455,96 +455,192 @@ async function loadOffers() {
 LOGIN
 ========================= */
 
+const studentLoginBtn = document.getElementById("studentLogin");
+const businessLoginBtn = document.getElementById("businessLogin");
+
+if (studentLoginBtn) {
+studentLoginBtn.addEventListener("click", function () {
+loginUser("student");
+});
+}
+
+if (businessLoginBtn) {
+businessLoginBtn.addEventListener("click", function () {
+loginUser("business");
+});
+}
+
 async function loginUser(role) {
 
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
+const email = document.getElementById("loginEmail").value;
+const password = document.getElementById("loginPassword").value;
 
-    if (!email || !password) {
-        alert("Please fill all fields");
-        return;
-    }
+if (!email || !password) {
+alert("Please fill all fields");
+return;
+}
 
-    try {
+try {
 
-        const response = await fetch(`${API_URL}/login`, {
+const response = await fetch(`${API_URL}/login`, {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify({
+email,
+password,
+role
+})
+});
 
-            method: "POST",
+const data = await response.json();
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+alert(data.message);
 
-            body: JSON.stringify({ email, password, role })
+if (data.message === "Login successful") {
 
-        });
+localStorage.setItem("userEmail", email);
 
-        const data = await response.json();
-
-        alert(data.message);
-
-        if (data.message === "Login successful") {
-
-            localStorage.setItem("userEmail", email);
-
-            if (role === "student") {
-                window.location.href = "submit-event.html";
-            } else {
-                window.location.href = "submit-offer.html";
-            }
-
-        }
-
-    } catch (error) {
-        console.error(error);
-    }
+if (role === "student") {
+window.location.href = "submit-event.html";
+} else {
+window.location.href = "submit-offer.html";
+}
 
 }
 
+} catch (error) {
+
+console.error("Login error:", error);
+alert("Server error. Try again.");
+
+}
+
+}
 
 
 /* =========================
 SIGNUP
 ========================= */
 
+const studentSignupBtn = document.getElementById("studentSignup");
+const businessSignupBtn = document.getElementById("businessSignup");
+
+if (studentSignupBtn) {
+studentSignupBtn.addEventListener("click", function () {
+signupUser("student");
+});
+}
+
+if (businessSignupBtn) {
+businessSignupBtn.addEventListener("click", function () {
+signupUser("business");
+});
+}
+
 async function signupUser(role) {
 
-    const email = document.getElementById("signupEmail").value;
-    const password = document.getElementById("signupPassword").value;
+const email = document.getElementById("signupEmail").value;
+const password = document.getElementById("signupPassword").value;
 
-    if (!email || !password) {
-        alert("Please fill all fields");
-        return;
-    }
+if (!email || !password) {
+alert("Please fill all fields");
+return;
+}
 
-    try {
+try {
 
-        const response = await fetch(`${API_URL}/signup`, {
+const response = await fetch(`${API_URL}/signup`, {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify({
+email,
+password,
+role
+})
+});
 
-            method: "POST",
+const data = await response.json();
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+alert(data.message);
 
-            body: JSON.stringify({ email, password, role })
+if (data.message === "User created successfully") {
 
-        });
+localStorage.setItem("userEmail", email);
 
-        const data = await response.json();
-
-        alert(data.message);
-
-        if (data.message === "User created successfully") {
-            window.location.href = "login.html";
-        }
-
-    } catch (error) {
-        console.error(error);
-    }
+if (role === "student") {
+window.location.href = "submit-event.html";
+} else {
+window.location.href = "submit-offer.html";
+}
 
 }
 
+} catch (error) {
+
+console.error("Signup error:", error);
+alert("Server error");
+
+}
+
+}
+
+
+/* =========================
+PROFILE PAGE - STUDENT
+========================= */
+
+const profileEmail = localStorage.getItem("userEmail"); // get logged-in user's email
+
+const profileDiv = document.getElementById("profileInfo");
+const eventsDiv = document.getElementById("myEvents");
+
+// Load profile data
+async function loadProfile() {
+  try {
+    const response = await fetch(`${API_URL}/profile/${profileEmail}`);
+    if (!response.ok) throw new Error("Failed to load profile");
+
+    const data = await response.json();
+
+    // Show profile info
+    profileDiv.innerHTML = `
+      <h3>${data.email}</h3>
+      <p><b>Points Earned:</b> ${data.points}</p>
+    `;
+
+    // Clear previous events
+    eventsDiv.innerHTML = "";
+
+    // Show only submitted events
+    if (data.events && data.events.length > 0) {
+      data.events.forEach(event => {
+        const card = document.createElement("div");
+        card.className = "eventCard";
+
+        card.innerHTML = `
+          <h3>${event.eventName}</h3>
+          <p>${event.collegeName}</p>
+          <p>${event.date}</p>
+        `;
+
+        eventsDiv.appendChild(card);
+      });
+    } else {
+      eventsDiv.innerHTML = "<p>No submitted events yet.</p>";
+    }
+
+  } catch (error) {
+    console.error("Error loading profile:", error);
+    profileDiv.innerHTML = "<p>Error loading profile data.</p>";
+  }
+}
+
+// Call the function
+loadProfile();
 
 
 /* =========================
@@ -553,7 +649,7 @@ LOGOUT
 
 function logout() {
 
-    localStorage.removeItem("userEmail");
-    window.location.href = "login.html";
+localStorage.removeItem("userEmail");
+window.location.href = "login.html";
 
 }
