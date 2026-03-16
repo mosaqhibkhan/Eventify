@@ -16,9 +16,14 @@ app.use(express.json());
    MongoDB Connection
 ============================= */
 
-mongoose.connect("mongodb+srv://eventifyadmin:eventify123@cluster0.uhbp5cg.mongodb.net/eventify?retryWrites=true&w=majority")
+const MONGO_URI =
+process.env.MONGO_URI ||
+"mongodb+srv://eventifyadmin:eventify123@cluster0.uhbp5cg.mongodb.net/eventify?retryWrites=true&w=majority";
+
+mongoose.connect(MONGO_URI)
 .then(()=>console.log("MongoDB Connected"))
-.catch(err=>console.log(err));
+.catch(err=>console.log("MongoDB Error:",err));
+
 
 /* =============================
    TEST ROUTE
@@ -85,7 +90,7 @@ message:"Event submitted! You earned 50 points"
 }
 catch(error){
 
-console.error(error);
+console.error("Add event error:",error);
 
 res.status(500).json({
 message:"Server error"
@@ -99,7 +104,6 @@ message:"Server error"
 /* =============================
    ADD OFFER
 ============================= */
-
 
 app.post("/add-offer", async (req,res)=>{
 
@@ -140,6 +144,7 @@ message:"Server error"
 
 });
 
+
 /* =============================
    GET OFFERS FOR EVENT
 ============================= */
@@ -157,7 +162,7 @@ res.json(offers);
 }
 catch(error){
 
-console.error(error);
+console.error("Offer fetch error:",error);
 
 res.status(500).json({
 message:"Error fetching offers"
@@ -183,7 +188,7 @@ res.json(events);
 }
 catch(error){
 
-console.error(error);
+console.error("Events fetch error:",error);
 
 res.status(500).json({
 message:"Error fetching events"
@@ -236,7 +241,7 @@ message:"Signup successful"
 }
 catch(error){
 
-console.error(error);
+console.error("Signup error:",error);
 
 res.status(500).json({
 message:"Server error"
@@ -288,7 +293,7 @@ role:user.role
 }
 catch(error){
 
-console.error(error);
+console.error("Login error:",error);
 
 res.status(500).json({
 message:"Server error"
@@ -300,7 +305,7 @@ message:"Server error"
 
 
 /* =============================
-   LEADERBOARD
+   LEADERBOARD (TOP 3)
 ============================= */
 
 app.get("/leaderboard", async (req,res)=>{
@@ -317,7 +322,7 @@ res.json(users);
 }
 catch(error){
 
-console.error(error);
+console.error("Leaderboard error:",error);
 
 res.status(500).json({
 message:"Error loading leaderboard"
@@ -359,7 +364,7 @@ events:events
 }
 catch(error){
 
-console.error(error);
+console.error("Profile error:",error);
 
 res.status(500).json({
 message:"Error loading profile"
@@ -369,8 +374,10 @@ message:"Error loading profile"
 
 });
 
-/* trending*/
 
+/* =============================
+   TRENDING EVENTS
+============================= */
 
 app.get("/trending", async (req,res)=>{
 
@@ -400,7 +407,7 @@ res.json(trending);
 }
 catch(error){
 
-console.error(error);
+console.error("Trending error:",error);
 
 res.status(500).json({
 message:"Error loading trending events"
@@ -411,8 +418,12 @@ message:"Error loading trending events"
 });
 
 
-/* START SERVER */
+/* =============================
+   START SERVER
+============================= */
 
-app.listen(5000,()=>{
-console.log("Server running on port 5000");
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT,()=>{
+console.log(`Server running on port ${PORT}`);
 });
