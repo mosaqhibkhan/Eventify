@@ -635,7 +635,7 @@ async function loadProfile() {
 
   } catch (error) {
     console.error("Error loading profile:", error);
-    profileDiv.innerHTML = "<p>Error loading profile data.</p>";
+    profileDiv.innerHTML = "<p>Login To View Your Profile.</p>";
   }
 }
 
