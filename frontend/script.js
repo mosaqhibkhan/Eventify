@@ -322,7 +322,7 @@ loadTrending();
 
 
 /* =========================
-LEADERBOARD (TOP 3)
+LEADERBOARD (TOP 5)
 ========================= */
 
 async function loadLeaderboard() {
@@ -337,7 +337,7 @@ async function loadLeaderboard() {
 
         container.innerHTML = "";
 
-        const topUsers = users.slice(0, 3);
+        const topUsers = users.slice(0, 5);
 
         topUsers.forEach((user, index) => {
 
@@ -520,72 +520,78 @@ alert("Server error. Try again.");
 }
 
 
-/* =========================
-SIGNUP
-========================= */
+
+// =========================
+// SIGNUP WITH AUTO-LOGIN
+// =========================
 
 const studentSignupBtn = document.getElementById("studentSignup");
 const businessSignupBtn = document.getElementById("businessSignup");
 
 if (studentSignupBtn) {
-studentSignupBtn.addEventListener("click", function () {
-signupUser("student");
-});
+  studentSignupBtn.addEventListener("click", function () {
+    signupUser("student");
+  });
 }
 
 if (businessSignupBtn) {
-businessSignupBtn.addEventListener("click", function () {
-signupUser("business");
-});
+  businessSignupBtn.addEventListener("click", function () {
+    signupUser("business");
+  });
 }
 
 async function signupUser(role) {
+  const email = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value.trim();
 
-const email = document.getElementById("signupEmail").value;
-const password = document.getElementById("signupPassword").value;
+  if (!email || !password) {
+    alert("Please fill all fields");
+    return;
+  }
 
-if (!email || !password) {
-alert("Please fill all fields");
-return;
-}
+  try {
+    // 1️ Sign up user
+    const signupRes = await fetch(`${API_URL}/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, role }),
+    });
 
-try {
+    const signupData = await signupRes.json();
 
-const response = await fetch(`${API_URL}/signup`, {
-method: "POST",
-headers: {
-"Content-Type": "application/json"
-},
-body: JSON.stringify({
-email,
-password,
-role
-})
-});
+    if (!signupRes.ok) {
+      alert(signupData.message || "Signup failed. Try again.");
+      return;
+    }
 
-const data = await response.json();
+    //  Signup success, now auto-login
+    const loginRes = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, role }),
+    });
 
-alert(data.message);
+    const loginData = await loginRes.json();
 
-if (data.message === "User created successfully") {
+    if (loginRes.ok && loginData.message === "Login successful") {
+      // Save email in localStorage so profile page works
+      localStorage.setItem("userEmail", email);
+      alert("Signup and Login successful!");
 
-localStorage.setItem("userEmail", email);
+      // Redirect based on role
+      if (role === "student") {
+        window.location.href = "submit-event.html";
+      } else {
+        window.location.href = "submit-offer.html";
+      }
+    } else {
+      alert("Signup succeeded but login failed. Please login manually.");
+    }
 
-if (role === "student") {
-window.location.href = "submit-event.html";
-} else {
-window.location.href = "submit-offer.html";
-}
-
-}
-
-} catch (error) {
-
-console.error("Signup error:", error);
-alert("Server error");
-
-}
-
+  } catch (error) {
+    console.error("Signup/Login error:", error);
+    alert("Server error. Please try again later.");
+  }
 }
 
 
@@ -650,6 +656,6 @@ LOGOUT
 function logout() {
 
 localStorage.removeItem("userEmail");
-window.location.href = "login.html";
+window.location. href = "login.html";
 
 }
