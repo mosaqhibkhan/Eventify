@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 
 const Event = require("./models/Event");
 const Offer = require("./models/offer");
-const User = require("./models/User");
+const User = require("./models/user");
 
 const app = express();
 
