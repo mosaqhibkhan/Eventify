@@ -1,0 +1,279 @@
+/* ================== General ================== */
+body {
+  font-family: 'Poppins', Arial, sans-serif;
+  background: #121212; /* dark background   */
+  color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+/* ================== Navbar ================== */
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1a1a1a; /* dark navbar */
+  padding: 15px 40px;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.5);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+nav h2 {
+  margin: 0;
+  color: #9b59b6; /* purple brand color */
+  font-weight: bold;
+  font-size: 24px;
+}
+
+nav a {
+  margin-left: 20px;
+  text-decoration: none;
+  color: #f5f5f5;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+nav a:hover {
+  color: #9b59b6; /* hover purple */
+}
+
+/* ================== Headings ================== */
+h1 {
+  text-align: center;
+  margin: 40px 0 20px 0;
+  font-weight: 600;
+  color: #9b59b6;
+}
+
+/* ================== Form Sections ================== */
+.formSection {
+  background: #1f1f1f;
+  width: 400px;
+  margin: 40px auto;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+  transition: 0.3s;
+}
+
+.formSection:hover {
+  box-shadow: 0 8px 30px rgba(155, 89, 182, 0.5);
+}
+
+input, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  border-radius: 8px;
+  border: none;
+  font-size: 15px;
+  outline: none;
+  transition: 0.3s;
+}
+
+input {
+  background: #2a2a2a;
+  color: #f5f5f5;
+  border: 1px solid #333;
+}
+
+input:focus {
+  border: 1px solid #9b59b6;
+}
+
+button {
+  background: #9b59b6;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+button:hover {
+  background: #7d3ea6;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(155, 89, 182, 0.4);
+}
+
+/* ================== Search Input ================== */
+#searchInput {
+  width: 60%;
+  display: block;
+  margin: 20px auto;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #333;
+  background: #2a2a2a;
+  color: #f5f5f5;
+  font-size: 15px;
+}
+
+#searchInput:focus {
+  border: 1px solid #9b59b6;
+}
+
+/* ================== Events Grid ================== */
+#eventsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  padding: 40px;
+}
+
+/* ================== Event Cards ================== */
+.eventCard {
+  background: #1f1f1f;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+  transition: 0.3s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.eventCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(155, 89, 182, 0.6);
+}
+
+.eventCard h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #9b59b6;
+}
+
+.eventCard p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #ddd;
+}
+
+.eventCard button {
+  margin-top: 15px;
+  background: #9b59b6;
+  color: #fff;
+  font-weight: 600;
+}
+
+.eventCard button:hover {
+  background: #7d3ea6;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(155, 89, 182, 0.4);
+}
+
+#offersList{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+padding:40px;
+}
+/* ================== Leaderboard Cards ================== */
+
+.leaderboardCard{
+background:#1f1f1f;
+padding:20px;
+border-radius:12px;
+margin-bottom:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 5px 15px rgba(0,0,0,0.4);
+transition:0.3s;
+}
+
+.leaderboardCard:hover{
+transform:translateY(-3px);
+box-shadow:0 8px 20px rgba(155,89,182,0.4);
+}
+
+/* ====== Forms ====== */
+form select,
+form input,
+form textarea {
+  background: #2a2a2a;
+  color: #f5f5f5;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 15px;
+  width: 100%;
+  margin-top: 15px;
+  outline: none;
+  transition: 0.3s;
+}
+
+form select:focus,
+form input:focus,
+form textarea:focus {
+  border: 1px solid #9b59b6;
+}
+
+/* ====== Button ====== */
+form button {
+  background: #9b59b6;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 15px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  transition: 0.3s;
+}
+
+form button:hover {
+  background: #7d3ea6;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(155,89,182,0.4);
+}
+
+/* ====== Footer ====== */
+footer {
+  text-align: center;
+  margin: 40px 0;
+  color: #aaa;
+  font-size: 14px;
+}
+
+/* ================== Trending Events ================== */
+#trendingEvents {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* centers items horizontally */
+  gap: 25px;
+  padding: 20px 40px; /* top-bottom 20px, left-right 40px */
+  max-width: 1200px; /* optional, keeps content from stretching too far */
+  margin: 0 auto; /* centers container on page */
+}
+
+#trendingEvents > div {
+  background: #1f1f1f;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+  min-width: 250px; /* ensures boxes are uniform */
+  max-width: 300px;
+  transition: 0.3s;
+}
+
+#trendingEvents > div:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(155, 89, 182, 0.6);
+}
+
+#trendingEvents h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #9b59b6;
+  font-size: 18px;
+}
+
+#trendingEvents p {
+  margin: 5px 0;
+  color: #ddd;
+  font-size: 14px;
+}

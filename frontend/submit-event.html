@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Eventify - Submit Event</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+
+<nav>
+
+<h2>Eventify</h2>
+
+<div>
+<a href="index.html">Home</a>
+<a href="profile.html">Profile</a>
+<a href="#" onclick="logout()">Logout</a>
+</div>
+
+</nav>
+
+<!-- ================= PAGE TITLE ================= -->
+<h1>Submit Event</h1>
+
+<!-- ================= EVENT FORM ================= -->
+<section class="formSection">
+  <form id="eventForm">
+    <input type="text" id="collegeName" placeholder="College Name" required>
+    <input type="text" id="eventName" placeholder="Event Name" required>
+    <input type="date" id="date" required>
+    <input type="text" id="itemsNeeded" placeholder="Event Needs (comma separated)" required>
+    <button type="submit">Submit Event</button>
+  </form>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div style="max-width:1100px;margin:auto;display:flex;justify-content:space-between;flex-wrap:wrap;">
+<div>
+
+<h3 style="color:#9b59b6;">Eventify</h3>
+
+<p style="max-width:300px;">
+
+A student-driven platform to discover college events and connect businesses with campus communities.
+
+</p>
+
+</div>
+    <div>
+      <h4>Quick Links</h4>
+      <p><a href="index.html">Home</a></p>
+      <p><a href="profile.html">Profile</a></p>
+      <p><a href="leaderboard.html">Leaderboard</a></p>
+    </div>
+    <div>
+      <h4>Account</h4>
+      <p><a href="login.html">Login</a></p>
+      <p><a href="signup.html">Signup</a></p>
+    </div>
+  </div>
+  <hr style="margin:30px 0;border:0;border-top:1px solid #333;">
+  <p style="text-align:center;color:#aaa;">© 2026 Eventify. All rights reserved.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

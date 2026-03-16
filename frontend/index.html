@@ -1,15 +1,154 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>Eventify</title>
+<title>Eventify - Home</title>
+
 <link rel="stylesheet" href="style.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
 
-<h1>Eventify</h1>
-<p>Crowd Verified Campus Events Platform</p>
+<!-- ================= NAVBAR ================= -->
 
-<script src="app.js"></script>
+<nav>
+
+<h2>Eventify</h2>
+
+<div>
+<a href="index.html">Home</a>
+<a href="submit-event.html">Submit Event</a>
+<a href="leaderboard.html">Leaderboard</a>
+<a href="profile.html">Profile</a>
+<a href="login.html">Login</a>
+<a href="signup.html">Signup</a>
+</div>
+
+</nav>
+
+
+<!-- ================= HERO TITLE ================= -->
+
+<h1>Discover College Events Around You</h1>
+
+<input
+type="text"
+id="searchInput"
+placeholder="Search events by college name..."
+>
+
+
+<!-- ================= EVENTS SECTION ================= -->
+
+<section>
+
+<div id="eventsList"></div>
+
+</section>
+
+
+<!-- ================= TRENDING EVENTS ================= -->
+
+<section>
+
+<h1> Trending Events</h1>
+
+
+<div id="trendingEvents"></div>
+
+</section>
+
+
+<!-- ================= ABOUT SECTION ================= -->
+
+<section style="max-width:900px;margin:60px auto;text-align:center;line-height:1.6;">
+
+<h1>About Eventify</h1>
+
+<p>
+
+<strong>Eventify</strong> is a student-powered platform designed to make college events more visible and more rewarding.
+
+Students can report upcoming events like fests, graduations, fashion shows, and college trips happening around campuses.  
+Businesses such as cafes, clothing brands, hotels, and travel agencies can then post special offers tailored to those events.
+
+</p>
+
+<p>
+
+The first student to report an event earns points and recognition on the leaderboard, encouraging students to actively share opportunities while helping businesses reach the right audience.
+
+</p>
+
+<p>
+
+Eventify creates a win-win ecosystem where **students discover exciting events** and **businesses connect with campus communities**.
+
+</p>
+
+</section>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+<div style="max-width:1100px;margin:auto;display:flex;justify-content:space-between;flex-wrap:wrap;">
+
+<div>
+
+<h3 style="color:#9b59b6;">Eventify</h3>
+
+<p style="max-width:300px;">
+
+A student-driven platform to discover college events and connect businesses with campus communities.
+
+</p>
+
+</div>
+
+
+<div>
+
+<h4>Quick Links</h4>
+
+<p><a href="index.html">Home</a></p>
+<p><a href="submit-event.html">Submit Event</a></p>
+<p><a href="leaderboard.html">Leaderboard</a></p>
+
+</div>
+
+
+<div>
+
+<h4>Account</h4>
+
+<p><a href="login.html">Login</a></p>
+<p><a href="signup.html">Signup</a></p>
+
+</div>
+
+
+</div>
+
+<hr style="margin:30px 0;border:0;border-top:1px solid #333;">
+
+<p style="text-align:center;color:#aaa;">
+
+© 2026 Eventify. All rights reserved.
+
+</p>
+
+</footer>
+
+
+<script src="script.js"></script>
+
 </body>
+
 </html>
+
+
