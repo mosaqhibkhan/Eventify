@@ -1,5 +1,7 @@
 // script.js
 
+const API_URL = "https://eventify-backend-1i56.onrender.com";
+
 let allEvents = [];
 
 /* =========================
@@ -35,7 +37,7 @@ async function loadEventsForIndex(){
 
 try{
 
-const response = await fetch("http://localhost:5000/events");
+const response = await fetch(`${API_URL}/events`);
 const events = await response.json();
 
 allEvents = events;
@@ -92,7 +94,7 @@ async function viewOffers(eventId) {
 
 try{
 
-const response = await fetch(`http://localhost:5000/offers/${eventId}`);
+const response = await fetch(`${API_URL}/offers/${eventId}`);
 const offers = await response.json();
 
 const offersDiv = document.getElementById(`offers-${eventId}`);
@@ -149,14 +151,13 @@ collegeName: document.getElementById("collegeName").value,
 eventName: document.getElementById("eventName").value,
 date: document.getElementById("date").value,
 itemsNeeded: document.getElementById("itemsNeeded").value.split(","),
-
 submittedBy: email
 
 };
 
 try{
 
-const response = await fetch("http://localhost:5000/add-event",{
+const response = await fetch(`${API_URL}/add-event`,{
 
 method:"POST",
 headers:{
@@ -197,7 +198,7 @@ async function loadEventsForDropdown(){
 
 try{
 
-const response = await fetch("http://localhost:5000/events");
+const response = await fetch(`${API_URL}/events`);
 const events = await response.json();
 
 events.forEach(event => {
@@ -241,7 +242,7 @@ const eventId = document.getElementById("eventSelect").value;
 const businessName = document.getElementById("businessName").value;
 const offerDetails = document.getElementById("offerDetails").value;
 
-const response = await fetch("http://localhost:5000/add-offer",{
+const response = await fetch(`${API_URL}/add-offer`,{
 
 method:"POST",
 
@@ -276,7 +277,7 @@ async function loadTrending(){
 
 try{
 
-const response = await fetch("http://localhost:5000/trending");
+const response = await fetch(`${API_URL}/trending`);
 const trending = await response.json();
 
 const container = document.getElementById("trendingEvents");
@@ -287,7 +288,7 @@ container.innerHTML = "";
 
 for(const item of trending){
 
-const eventRes = await fetch("http://localhost:5000/events");
+const eventRes = await fetch(`${API_URL}/events`);
 const events = await eventRes.json();
 
 const event = events.find(e => e._id === item._id);
@@ -328,7 +329,7 @@ async function loadLeaderboard(){
 const container = document.getElementById("leaderboardList");
 if(!container) return;
 
-const response = await fetch("http://localhost:5000/leaderboard");
+const response = await fetch(`${API_URL}/leaderboard`);
 
 const users = await response.json();
 
@@ -355,7 +356,6 @@ container.appendChild(div);
 loadLeaderboard();
 
 
-
 /* =========================
 EVENT DETAIL PAGE
 ========================= */
@@ -370,7 +370,7 @@ if(!container) return;
 
 try {
 
-const response = await fetch("http://localhost:5000/events");
+const response = await fetch(`${API_URL}/events`);
 const events = await response.json();
 const event = events.find(e => e._id === eventId);
 
@@ -404,7 +404,7 @@ if(!container) return;
 
 try {
 
-const response = await fetch(`http://localhost:5000/offers/${eventId}`);
+const response = await fetch(`${API_URL}/offers/${eventId}`);
 const offers = await response.json();
 
 container.innerHTML = "";
@@ -438,193 +438,6 @@ console.error("Error loading offers:", error);
 
 loadEvent();
 loadOffers();
-
-
-
-/* =========================
-LOGIN
-========================= */
-
-const studentLoginBtn = document.getElementById("studentLogin");
-const businessLoginBtn = document.getElementById("businessLogin");
-
-if(studentLoginBtn){
-studentLoginBtn.addEventListener("click",function(){
-loginUser("student");
-});
-}
-
-if(businessLoginBtn){
-businessLoginBtn.addEventListener("click",function(){
-loginUser("business");
-});
-}
-
-async function loginUser(role){
-
-const email = document.getElementById("loginEmail").value;
-const password = document.getElementById("loginPassword").value;
-
-try{
-
-const response = await fetch("http://localhost:5000/login",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-email,
-password,
-role
-})
-});
-
-const data = await response.json();
-
-alert(data.message);
-
-if(data.message === "Login successful"){
-
-localStorage.setItem("userEmail", data.email);
-
-if(role === "student"){
-window.location.href = "submit-event.html";
-}
-
-if(role === "business"){
-window.location.href = "submit-offer.html";
-}
-
-}
-
-}catch(error){
-
-console.error("Login error:",error);
-
-}
-
-}
-
-
-/* =========================
-PROFILE
-========================= */
-
-const profileDiv = document.getElementById("profileInfo");
-
-if(profileDiv){
-
-const email = localStorage.getItem("userEmail");
-
-loadProfile(email);
-
-}
-
-async function loadProfile(email){
-
-const response = await fetch("http://localhost:5000/profile/"+email);
-
-const data = await response.json();
-
-profileDiv.innerHTML = `
-<h3>${data.email}</h3>
-<p><b>Points Earned:</b> ${data.points}</p>
-`;
-
-const eventsDiv = document.getElementById("myEvents");
-
-eventsDiv.innerHTML = "";
-
-data.events.forEach(event=>{
-
-const card = document.createElement("div");
-
-card.className = "eventCard";
-
-card.innerHTML = `
-<h3>${event.eventName}</h3>
-<p>${event.collegeName}</p>
-<p>${event.date}</p>
-`;
-
-eventsDiv.appendChild(card);
-
-});
-
-}
-
-
-/* =========================
-SIGNUP (FIXED)
-========================= */
-
-async function signup(role) {
-
-const email = document.getElementById("signupEmail").value;
-const password = document.getElementById("signupPassword").value;
-
-if (!email || !password) {
-alert("Please fill all fields");
-return;
-}
-
-try {
-
-const response = await fetch("http://localhost:5000/signup", {
-
-method: "POST",
-
-headers: { "Content-Type": "application/json" },
-
-body: JSON.stringify({ email, password, role })
-
-});
-
-const data = await response.json();
-
-if (response.ok) {
-
-alert(data.message);
-
-/* FIX: store email immediately */
-localStorage.setItem("userEmail", email);
-
-if (role === "student")
-window.location.href = "submit-event.html";
-
-else
-window.location.href = "submit-offer.html";
-
-} else {
-
-alert(data.message);
-
-}
-
-} catch (error) {
-
-console.error("Signup error:", error);
-
-alert("Server error. Try again.");
-
-}
-
-}
-
-const studentSignupBtn = document.getElementById("studentSignup");
-const businessSignupBtn = document.getElementById("businessSignup");
-
-if(studentSignupBtn){
-studentSignupBtn.addEventListener("click", function() {
-signup('student');
-});
-}
-
-if(businessSignupBtn){
-businessSignupBtn.addEventListener("click", function() {
-signup('business');
-});
-}
 
 
 /* =========================
