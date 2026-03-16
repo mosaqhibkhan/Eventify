@@ -441,6 +441,99 @@ loadOffers();
 
 
 /* =========================
+LOGIN
+========================= */
+
+const studentLoginBtn = document.getElementById("studentLogin");
+const businessLoginBtn = document.getElementById("businessLogin");
+
+if(studentLoginBtn){
+studentLoginBtn.addEventListener("click",function(){
+loginUser("student");
+});
+}
+
+if(businessLoginBtn){
+businessLoginBtn.addEventListener("click",function(){
+loginUser("business");
+});
+}
+
+async function loginUser(role){
+
+const email = document.getElementById("loginEmail").value;
+const password = document.getElementById("loginPassword").value;
+
+const response = await fetch(`${API_URL}/login`,{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({email,password,role})
+});
+
+const data = await response.json();
+
+alert(data.message);
+
+if(data.message==="Login successful"){
+localStorage.setItem("userEmail",email);
+
+if(role==="student"){
+window.location.href="submit-event.html";
+}else{
+window.location.href="submit-offer.html";
+}
+
+}
+
+}
+
+
+/* =========================
+SIGNUP
+========================= */
+
+const studentSignupBtn = document.getElementById("studentSignup");
+const businessSignupBtn = document.getElementById("businessSignup");
+
+if(studentSignupBtn){
+studentSignupBtn.addEventListener("click",function(){
+signupUser("student");
+});
+}
+
+if(businessSignupBtn){
+businessSignupBtn.addEventListener("click",function(){
+signupUser("business");
+});
+}
+
+async function signupUser(role){
+
+const email = document.getElementById("signupEmail").value;
+const password = document.getElementById("signupPassword").value;
+
+const response = await fetch(`${API_URL}/signup`,{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({email,password,role})
+});
+
+const data = await response.json();
+
+alert(data.message);
+
+if(data.message==="User created successfully"){
+window.location.href="login.html";
+}
+
+}
+
+
+/* =========================
 LOGOUT
 ========================= */
 
