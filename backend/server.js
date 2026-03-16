@@ -4,7 +4,7 @@ const cors = require("cors");
 const bcrypt = require("bcrypt");
 
 const Event = require("./models/Event");
-const Offer = require("./models/Offer");
+const Offer = require("./models/offer");
 const User = require("./models/User");
 
 const app = express();
