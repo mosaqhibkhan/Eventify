@@ -1,8 +1,11 @@
-// script.js
+// =========================
+// CONFIG
+// =========================
 
 const API_URL = "https://eventify-backend-1i56.onrender.com";
 
 let allEvents = [];
+
 
 /* =========================
 INDEX PAGE - LOAD EVENTS
@@ -11,119 +14,113 @@ INDEX PAGE - LOAD EVENTS
 const eventsList = document.getElementById("eventsList");
 const searchInput = document.getElementById("searchInput");
 
-if(eventsList){
+if (eventsList) {
+    loadEventsForIndex();
 
-loadEventsForIndex();
+    if (searchInput) {
+        searchInput.addEventListener("input", function () {
 
-if(searchInput){
+            const searchValue = this.value.toLowerCase();
 
-searchInput.addEventListener("input",function(){
+            const filteredEvents = allEvents.filter(event =>
+                event.collegeName.toLowerCase().includes(searchValue)
+            );
 
-const searchValue = this.value.toLowerCase();
+            displayEvents(filteredEvents);
 
-const filteredEvents = allEvents.filter(event =>
-event.collegeName.toLowerCase().includes(searchValue)
-);
+        });
+    }
+}
 
-displayEvents(filteredEvents);
+async function loadEventsForIndex() {
 
-});
+    try {
+
+        const response = await fetch(`${API_URL}/events`);
+        const events = await response.json();
+
+        allEvents = events;
+        displayEvents(events);
+
+    } catch (error) {
+        console.error("Error loading events:", error);
+    }
 
 }
 
-}
+function displayEvents(events) {
 
-async function loadEventsForIndex(){
+    const container = document.getElementById("eventsList");
+    if (!container) return;
 
-try{
+    container.innerHTML = "";
 
-const response = await fetch(`${API_URL}/events`);
-const events = await response.json();
+    events.forEach(event => {
 
-allEvents = events;
+        const card = document.createElement("div");
+        card.className = "eventCard";
 
-displayEvents(events);
+        card.innerHTML = `
+        <h3>${event.eventName}</h3>
+        <p>${event.collegeName}</p>
+        <p>${event.date}</p>
+        <p>${Array.isArray(event.itemsNeeded) ? event.itemsNeeded.join(", ") : event.itemsNeeded}</p>
+        <button onclick="viewEvent('${event._id}')">View Offers</button>
+        `;
 
-}catch(error){
+        container.appendChild(card);
 
-console.error("Error loading events:",error);
-
-}
-
-}
-
-function displayEvents(events){
-
-const container = document.getElementById("eventsList");
-
-if(!container) return;
-
-container.innerHTML = "";
-
-events.forEach(event => {
-
-const card = document.createElement("div");
-card.className = "eventCard";
-
-card.innerHTML = `
-<h3>${event.eventName}</h3>
-<p>${event.collegeName}</p>
-<p>${event.date}</p>
-<p>${event.itemsNeeded}</p>
-<button onclick="viewEvent('${event._id}')">View Offers</button>
-`;
-
-container.appendChild(card);
-
-});
+    });
 
 }
 
-function viewEvent(id){
-
-window.location.href = "event-details.html?id=" + id;
-
+function viewEvent(id) {
+    window.location.href = "event-details.html?id=" + id;
 }
+
 
 
 /* =========================
-VIEW OFFERS
+VIEW OFFERS (INLINE)
 ========================= */
 
 async function viewOffers(eventId) {
 
-try{
+    try {
 
-const response = await fetch(`${API_URL}/offers/${eventId}`);
-const offers = await response.json();
+        const response = await fetch(`${API_URL}/offers/${eventId}`);
+        const offers = await response.json();
 
-const offersDiv = document.getElementById(`offers-${eventId}`);
-if (!offersDiv) return;
+        const offersDiv = document.getElementById(`offers-${eventId}`);
+        if (!offersDiv) return;
 
-offersDiv.innerHTML = "";
+        offersDiv.innerHTML = "";
 
-if (offers.length === 0) {
+        if (!offers || offers.length === 0) {
+            offersDiv.innerHTML = "<p>No offers yet</p>";
+            return;
+        }
 
-offersDiv.innerHTML = "<p>No offers yet</p>";
-return;
+        offers.forEach(offer => {
+
+            const p = document.createElement("p");
+
+            const details = offer.offerDetails || offer.offer || "Offer available";
+
+            p.innerHTML = `<b>${offer.businessName}</b>: ${details}`;
+
+            offersDiv.appendChild(p);
+
+        });
+
+    } catch (error) {
+
+        console.error("Error loading offers:", error);
+
+    }
 
 }
 
-offers.forEach(offer => {
-
-const p = document.createElement("p");
-p.innerHTML = `<b>${offer.businessName}</b>: ${offer.offerDetails}`;
-offersDiv.appendChild(p);
-
-});
-
-}catch(error){
-
-console.error("Error loading offers:", error);
-
-}
-
-}
 
 
 /* =========================
@@ -132,56 +129,53 @@ STUDENT DASHBOARD - SUBMIT EVENT
 
 const eventForm = document.getElementById("eventForm");
 
-if(eventForm){
+if (eventForm) {
 
-const email = localStorage.getItem("userEmail");
+    const email = localStorage.getItem("userEmail");
 
-if(!email){
-alert("Please login first");
-window.location.href = "login.html";
-}
+    if (!email) {
+        alert("Please login first");
+        window.location.href = "login.html";
+    }
 
-eventForm.addEventListener("submit",async function(e){
+    eventForm.addEventListener("submit", async function (e) {
 
-e.preventDefault();
+        e.preventDefault();
 
-const eventData = {
+        const eventData = {
 
-collegeName: document.getElementById("collegeName").value,
-eventName: document.getElementById("eventName").value,
-date: document.getElementById("date").value,
-itemsNeeded: document.getElementById("itemsNeeded").value.split(","),
-submittedBy: email
+            collegeName: document.getElementById("collegeName").value,
+            eventName: document.getElementById("eventName").value,
+            date: document.getElementById("date").value,
+            itemsNeeded: document.getElementById("itemsNeeded").value.split(","),
+            submittedBy: email
 
-};
+        };
 
-try{
+        try {
 
-const response = await fetch(`${API_URL}/add-event`,{
+            const response = await fetch(`${API_URL}/add-event`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(eventData)
+            });
 
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify(eventData)
+            const data = await response.json();
 
-});
+            alert(data.message);
 
-const data = await response.json();
+            eventForm.reset();
 
-alert(data.message);
+        } catch (error) {
+            console.error("Error submitting event:", error);
+        }
 
-eventForm.reset();
-
-}catch(error){
-
-console.error("Error submitting event:",error);
-
-}
-
-});
+    });
 
 }
+
 
 
 /* =========================
@@ -190,33 +184,34 @@ LOAD EVENTS INTO DROPDOWN
 
 const eventSelect = document.getElementById("eventSelect");
 
-if(eventSelect){
-loadEventsForDropdown();
+if (eventSelect) {
+    loadEventsForDropdown();
 }
 
-async function loadEventsForDropdown(){
+async function loadEventsForDropdown() {
 
-try{
+    try {
 
-const response = await fetch(`${API_URL}/events`);
-const events = await response.json();
+        const response = await fetch(`${API_URL}/events`);
+        const events = await response.json();
 
-events.forEach(event => {
+        events.forEach(event => {
 
-const option = document.createElement("option");
+            const option = document.createElement("option");
 
-option.value = event._id;
-option.textContent = event.eventName + " - " + event.collegeName;
+            option.value = event._id;
+            option.textContent = `${event.eventName} - ${event.collegeName}`;
 
-eventSelect.appendChild(option);
+            eventSelect.appendChild(option);
 
-});
+        });
 
-}catch(error){
-console.error(error);
+    } catch (error) {
+        console.error(error);
+    }
+
 }
 
-}
 
 
 /* =========================
@@ -225,312 +220,331 @@ SUBMIT OFFER
 
 const offerForm = document.getElementById("offerForm");
 
-if(offerForm){
+if (offerForm) {
 
-const email = localStorage.getItem("userEmail");
+    const email = localStorage.getItem("userEmail");
 
-if(!email){
-alert("Please login first");
-window.location.href = "login.html";
+    if (!email) {
+        alert("Please login first");
+        window.location.href = "login.html";
+    }
+
+    offerForm.addEventListener("submit", async function (e) {
+
+        e.preventDefault();
+
+        const eventId = document.getElementById("eventSelect").value;
+        const businessName = document.getElementById("businessName").value;
+        const offerDetails = document.getElementById("offerDetails").value;
+
+        try {
+
+            const response = await fetch(`${API_URL}/add-offer`, {
+
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    eventId,
+                    businessName,
+                    offerDetails
+                })
+
+            });
+
+            const data = await response.json();
+
+            alert(data.message);
+
+            offerForm.reset();
+
+        } catch (error) {
+            console.error(error);
+        }
+
+    });
+
 }
 
-offerForm.addEventListener("submit", async function(e){
-
-e.preventDefault();
-
-const eventId = document.getElementById("eventSelect").value;
-const businessName = document.getElementById("businessName").value;
-const offerDetails = document.getElementById("offerDetails").value;
-
-const response = await fetch(`${API_URL}/add-offer`,{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-eventId,
-businessName,
-offerDetails
-})
-
-});
-
-const data = await response.json();
-
-alert(data.message);
-
-offerForm.reset();
-
-});
-
-}
 
 
 /* =========================
 TRENDING EVENTS
 ========================= */
 
-async function loadTrending(){
+async function loadTrending() {
 
-try{
+    try {
 
-const response = await fetch(`${API_URL}/trending`);
-const trending = await response.json();
+        const container = document.getElementById("trendingEvents");
+        if (!container) return;
 
-const container = document.getElementById("trendingEvents");
+        const trendingRes = await fetch(`${API_URL}/trending`);
+        const trending = await trendingRes.json();
 
-if(!container) return;
+        const eventsRes = await fetch(`${API_URL}/events`);
+        const events = await eventsRes.json();
 
-container.innerHTML = "";
+        container.innerHTML = "";
 
-for(const item of trending){
+        trending.forEach(item => {
 
-const eventRes = await fetch(`${API_URL}/events`);
-const events = await eventRes.json();
+            const event = events.find(e => e._id === item._id);
 
-const event = events.find(e => e._id === item._id);
+            if (event) {
 
-if(event){
+                const div = document.createElement("div");
 
-const div = document.createElement("div");
+                div.className = "eventCard";
 
-div.innerHTML = `
-<h3>${event.eventName}</h3>
-<p>${event.collegeName}</p>
-<p>${item.offersCount} offers</p>
-`;
+                div.innerHTML = `
+                <h3>${event.eventName}</h3>
+                <p>${event.collegeName}</p>
+                <p>${item.offersCount} offers</p>
+                `;
 
-container.appendChild(div);
+                container.appendChild(div);
 
-}
+            }
 
-}
+        });
 
-}catch(error){
-
-console.error("Error loading trending:",error);
-
-}
+    } catch (error) {
+        console.error("Error loading trending:", error);
+    }
 
 }
 
 loadTrending();
 
 
+
 /* =========================
-LEADERBOARD
+LEADERBOARD (TOP 3)
 ========================= */
 
-async function loadLeaderboard(){
+async function loadLeaderboard() {
 
-const container = document.getElementById("leaderboardList");
-if(!container) return;
+    const container = document.getElementById("leaderboardList");
+    if (!container) return;
 
-const response = await fetch(`${API_URL}/leaderboard`);
+    try {
 
-const users = await response.json();
+        const response = await fetch(`${API_URL}/leaderboard`);
+        const users = await response.json();
 
-container.innerHTML = "";
+        container.innerHTML = "";
 
-users.forEach((user,index)=>{
+        const topUsers = users.slice(0, 3);
 
-const div = document.createElement("div");
+        topUsers.forEach((user, index) => {
 
-div.className = "leaderboardCard";
+            const div = document.createElement("div");
 
-div.innerHTML = `
-<h3>#${index+1}</h3>
-<p>${user.email}</p>
-<p>${user.points} points</p>
-`;
+            div.className = "leaderboardCard";
 
-container.appendChild(div);
+            div.innerHTML = `
+            <h3>#${index + 1}</h3>
+            <p>${user.email}</p>
+            <p>${user.points} points</p>
+            `;
 
-});
+            container.appendChild(div);
+
+        });
+
+    } catch (error) {
+        console.error(error);
+    }
 
 }
 
 loadLeaderboard();
 
 
+
 /* =========================
-EVENT DETAIL PAGE
+EVENT DETAILS PAGE
 ========================= */
 
 const urlParams = new URLSearchParams(window.location.search);
 const eventId = urlParams.get("id");
 
+if (eventId) {
+    loadEvent();
+    loadOffers();
+}
+
 async function loadEvent() {
 
-const container = document.getElementById("eventInfo");
-if(!container) return;
+    const container = document.getElementById("eventInfo");
+    if (!container) return;
 
-try {
+    try {
 
-const response = await fetch(`${API_URL}/events`);
-const events = await response.json();
-const event = events.find(e => e._id === eventId);
+        const response = await fetch(`${API_URL}/events`);
+        const events = await response.json();
 
-if (!event) {
-container.innerHTML = "<p>Event not found.</p>";
-return;
-}
+        const event = events.find(e => e._id === eventId);
 
-container.innerHTML = `
-<div class="eventCard">
-<h2>${event.eventName}</h2>
-<p><b>College:</b> ${event.collegeName}</p>
-<p><b>Date:</b> ${event.date}</p>
-<p><b>Items Needed:</b> ${event.itemsNeeded.join(", ")}</p>
-<p><b>Submitted By:</b> ${event.submittedBy}</p>
-</div>
-`;
+        if (!event) {
+            container.innerHTML = "<p>Event not found</p>";
+            return;
+        }
 
-}catch(error){
+        container.innerHTML = `
+        <div class="eventCard">
+        <h2>${event.eventName}</h2>
+        <p><b>College:</b> ${event.collegeName}</p>
+        <p><b>Date:</b> ${event.date}</p>
+        <p><b>Items Needed:</b> ${event.itemsNeeded.join(", ")}</p>
+        <p><b>Submitted By:</b> ${event.submittedBy}</p>
+        </div>
+        `;
 
-console.error("Error loading event:", error);
-
-}
+    } catch (error) {
+        console.error("Error loading event:", error);
+    }
 
 }
 
 async function loadOffers() {
 
-const container = document.getElementById("offersList");
-if(!container) return;
+    const container = document.getElementById("offersList");
+    if (!container) return;
 
-try {
+    try {
 
-const response = await fetch(`${API_URL}/offers/${eventId}`);
-const offers = await response.json();
+        const response = await fetch(`${API_URL}/offers/${eventId}`);
+        const offers = await response.json();
 
-container.innerHTML = "";
+        container.innerHTML = "";
 
-if (offers.length === 0) {
-container.innerHTML = "<p>No offers submitted yet.</p>";
-return;
+        if (!offers || offers.length === 0) {
+            container.innerHTML = "<p>No offers submitted yet.</p>";
+            return;
+        }
+
+        offers.forEach(offer => {
+
+            const div = document.createElement("div");
+            div.className = "eventCard";
+
+            const details = offer.offerDetails || offer.offer || "Offer available";
+
+            div.innerHTML = `
+            <h3>${offer.businessName}</h3>
+            <p>${details}</p>
+            `;
+
+            container.appendChild(div);
+
+        });
+
+    } catch (error) {
+        console.error("Error loading offers:", error);
+    }
+
 }
 
-offers.forEach(offer => {
-
-const div = document.createElement("div");
-div.className = "eventCard";
-
-div.innerHTML = `
-<h3>${offer.businessName}</h3>
-<p>${offer.offerDetails}</p>
-`;
-
-container.appendChild(div);
-
-});
-
-}catch(error){
-
-console.error("Error loading offers:", error);
-
-}
-
-}
-
-loadEvent();
-loadOffers();
 
 
 /* =========================
 LOGIN
 ========================= */
 
-const studentLoginBtn = document.getElementById("studentLogin");
-const businessLoginBtn = document.getElementById("businessLogin");
+async function loginUser(role) {
 
-if(studentLoginBtn){
-studentLoginBtn.addEventListener("click",function(){
-loginUser("student");
-});
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+
+    if (!email || !password) {
+        alert("Please fill all fields");
+        return;
+    }
+
+    try {
+
+        const response = await fetch(`${API_URL}/login`, {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({ email, password, role })
+
+        });
+
+        const data = await response.json();
+
+        alert(data.message);
+
+        if (data.message === "Login successful") {
+
+            localStorage.setItem("userEmail", email);
+
+            if (role === "student") {
+                window.location.href = "submit-event.html";
+            } else {
+                window.location.href = "submit-offer.html";
+            }
+
+        }
+
+    } catch (error) {
+        console.error(error);
+    }
+
 }
 
-if(businessLoginBtn){
-businessLoginBtn.addEventListener("click",function(){
-loginUser("business");
-});
-}
-
-async function loginUser(role){
-
-const email = document.getElementById("loginEmail").value;
-const password = document.getElementById("loginPassword").value;
-
-const response = await fetch(`${API_URL}/login`,{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({email,password,role})
-});
-
-const data = await response.json();
-
-alert(data.message);
-
-if(data.message==="Login successful"){
-localStorage.setItem("userEmail",email);
-
-if(role==="student"){
-window.location.href="submit-event.html";
-}else{
-window.location.href="submit-offer.html";
-}
-
-}
-
-}
 
 
 /* =========================
 SIGNUP
 ========================= */
 
-const studentSignupBtn = document.getElementById("studentSignup");
-const businessSignupBtn = document.getElementById("businessSignup");
+async function signupUser(role) {
 
-if(studentSignupBtn){
-studentSignupBtn.addEventListener("click",function(){
-signupUser("student");
-});
+    const email = document.getElementById("signupEmail").value;
+    const password = document.getElementById("signupPassword").value;
+
+    if (!email || !password) {
+        alert("Please fill all fields");
+        return;
+    }
+
+    try {
+
+        const response = await fetch(`${API_URL}/signup`, {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({ email, password, role })
+
+        });
+
+        const data = await response.json();
+
+        alert(data.message);
+
+        if (data.message === "User created successfully") {
+            window.location.href = "login.html";
+        }
+
+    } catch (error) {
+        console.error(error);
+    }
+
 }
 
-if(businessSignupBtn){
-businessSignupBtn.addEventListener("click",function(){
-signupUser("business");
-});
-}
-
-async function signupUser(role){
-
-const email = document.getElementById("signupEmail").value;
-const password = document.getElementById("signupPassword").value;
-
-const response = await fetch(`${API_URL}/signup`,{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({email,password,role})
-});
-
-const data = await response.json();
-
-alert(data.message);
-
-if(data.message==="User created successfully"){
-window.location.href="login.html";
-}
-
-}
 
 
 /* =========================
@@ -538,6 +552,8 @@ LOGOUT
 ========================= */
 
 function logout() {
-localStorage.removeItem("userEmail");
-window.location.href = "login.html";
+
+    localStorage.removeItem("userEmail");
+    window.location.href = "login.html";
+
 }
