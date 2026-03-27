@@ -400,7 +400,8 @@ async function loadEvent() {
         <p><b>College:</b> ${event.collegeName}</p>
         <p><b>Date:</b> ${event.date}</p>
         <p><b>Items Needed:</b> ${event.itemsNeeded.join(", ")}</p>
-        <p><b>Submitted By:</b> ${event.submittedBy}</p>
+        <p><b>First Reporter:</b> ${event.submissions?.[0]?.email || "N/A"}</p>
+        <p><b>Total Reports:</b> ${event.submissions?.length || 0}</p>
         </div>
         `;
 

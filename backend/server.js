@@ -35,68 +35,112 @@ res.send("Eventify backend running");
 
 
 /* =============================
-   ADD EVENT
+   ADD EVENT (UPDATED LOGIC)
 ============================= */
 
 app.post("/add-event", async (req, res) => {
 
-try{
+  try {
 
-const { collegeName, eventName, date, itemsNeeded, submittedBy } = req.body;
+    const { collegeName, eventName, date, itemsNeeded, submittedBy } = req.body;
 
-if(!collegeName || !eventName || !date || !submittedBy){
-return res.status(400).json({
-message:"Missing required fields"
-});
-}
+    if (!collegeName || !eventName || !date || !submittedBy) {
+      return res.status(400).json({
+        message: "Missing required fields"
+      });
+    }
 
-/* check duplicate event */
+    let event = await Event.findOne({
+      collegeName,
+      eventName,
+      date
+    });
 
-const existingEvent = await Event.findOne({
-collegeName,
-eventName,
-date
-});
+    const submission = {
+      email: submittedBy,
+      submittedAt: new Date()
+    };
 
-if(existingEvent){
-return res.json({
-message:"Event already reported earlier"
-});
-}
+    // ✅ CREATE NEW EVENT
+    if (!event) {
 
-/* create event */
+      event = new Event({
+        collegeName,
+        eventName,
+        date,
+        itemsNeeded,
+        submissions: [submission],
+        isValidated: false,
+        winners: []
+      });
 
-const newEvent = new Event({
-collegeName,
-eventName,
-date,
-itemsNeeded,
-submittedBy
-});
+      await event.save();
 
-await newEvent.save();
+      return res.json({
+        message: "Event submitted successfully"
+      });
 
-/* reward student */
+    }
 
-await User.findOneAndUpdate(
-{ email: submittedBy },
-{ $inc: { points: 50 } }
-);
+    // ✅ ADD NEW SUBMISSION
+    event.submissions.push(submission);
 
-res.json({
-message:"Event submitted! You earned 50 points"
-});
+    // =========================
+    //  REWARD LOGIC
+    // =========================
 
-}
-catch(error){
+    if (!event.isValidated && event.submissions.length >= 3) {
 
-console.error("Add event error:",error);
+      // remove duplicate users
+      const uniqueSubmissions = [];
+      const seen = new Set();
 
-res.status(500).json({
-message:"Server error"
-});
+      for (let sub of event.submissions) {
+        if (!seen.has(sub.email)) {
+          seen.add(sub.email);
+          uniqueSubmissions.push(sub);
+        }
+      }
 
-}
+      // sort by time
+      uniqueSubmissions.sort(
+        (a, b) => new Date(a.submittedAt) - new Date(b.submittedAt)
+      );
+
+      const winners = uniqueSubmissions.slice(0, 3);
+      const rewards = [50, 30, 10];
+
+      for (let i = 0; i < winners.length; i++) {
+
+        const user = await User.findOne({ email: winners[i].email });
+
+        if (user) {
+          user.points += rewards[i];
+          await user.save();
+        }
+
+      }
+
+      event.winners = winners;
+      event.isValidated = true;
+
+    }
+
+    await event.save();
+
+    res.json({
+      message: "Event submitted successfully"
+    });
+
+  } catch (error) {
+
+    console.error("Add event error:", error);
+
+    res.status(500).json({
+      message: "Server error"
+    });
+
+  }
 
 });
 
@@ -352,7 +396,7 @@ message:"User not found"
 }
 
 const events = await Event.find({
-submittedBy:email
+  "submissions.email": email
 });
 
 res.json({
