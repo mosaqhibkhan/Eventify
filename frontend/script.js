@@ -364,9 +364,9 @@ async function loadLeaderboard() {
             event.leaderboard.forEach(user => {
 
                 const medal =
-                    user.position === 1 ? "🥇" :
-                    user.position === 2 ? "🥈" :
-                    user.position === 3 ? "🥉" : "";
+                    user.position === 1 ? "1]" :
+                    user.position === 2 ? "2]" :
+                    user.position === 3 ? "3]" : "";
 
                 leaderboardHTML += `
                     <p>${medal} ${user.email} (${user.points} pts)</p>

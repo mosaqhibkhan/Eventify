@@ -325,33 +325,7 @@ message:"Server error"
 });
 
 
-/* =============================
-   LEADERBOARD (TOP 3)
-============================= */
 
-app.get("/leaderboard", async (req,res)=>{
-
-try{
-
-const users = await User.find({role:"student"})
-.sort({points:-1})
-.limit(3)
-.select("email points");
-
-res.json(users);
-
-}
-catch(error){
-
-console.error("Leaderboard error:",error);
-
-res.status(500).json({
-message:"Error loading leaderboard"
-});
-
-}
-
-});
 
 
 /* =============================
