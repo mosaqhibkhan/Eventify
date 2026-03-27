@@ -5,7 +5,11 @@ const EventSchema = new mongoose.Schema({
     eventName: String,
     date: String,
     itemsNeeded: [String],
-    submittedBy: String
+    submissions: [
+  {
+    email: String
+  }
+]
 });
 
 EventSchema.index(
