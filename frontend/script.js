@@ -32,6 +32,75 @@ if (eventsList) {
     }
 }
 
+/* =========================
+SUBMIT OFFER (FIXED)
+========================= */
+
+const offerForm = document.getElementById("offerForm");
+
+if (offerForm) {
+
+    const email = localStorage.getItem("userEmail");
+
+    if (!email) {
+        alert("Please login first");
+        window.location.href = "login.html";
+    }
+
+    offerForm.addEventListener("submit", async function (e) {
+
+        e.preventDefault();
+
+        const eventId = document.getElementById("eventSelect").value;
+        const businessName = document.getElementById("businessName").value;
+        const offerDetails = document.getElementById("offerDetails").value;
+
+        
+        if (!eventId || !businessName || !offerDetails) {
+            alert("Please fill all fields");
+            return;
+        }
+
+        try {
+
+            console.log("Submitting offer:", {
+                eventId,
+                businessName,
+                offerDetails
+            });
+
+            const response = await fetch(`${API_URL}/add-offer`, {
+
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    eventId,
+                    businessName,
+                    offerDetails
+                })
+
+            });
+
+            const data = await response.json();
+
+            console.log("Offer response:", data);
+
+            alert(data.message);
+
+            offerForm.reset();
+
+        } catch (error) {
+            console.error("Offer error:", error);
+            alert("Server error while submitting offer");
+        }
+
+    });
+
+}
+
 async function loadEventsForIndex() {
 
     try {
@@ -131,6 +200,42 @@ if (eventForm) {
         }
 
     });
+
+}
+
+/* =========================
+LOAD EVENTS INTO DROPDOWN
+========================= */
+
+const eventSelect = document.getElementById("eventSelect");
+
+if (eventSelect) {
+    loadEventsForDropdown();
+}
+
+async function loadEventsForDropdown() {
+
+    try {
+
+        const response = await fetch(`${API_URL}/events`);
+        const events = await response.json();
+
+        eventSelect.innerHTML = `<option value="">Select Event</option>`;
+
+        events.forEach(event => {
+
+            const option = document.createElement("option");
+
+            option.value = event._id;
+            option.textContent = `${event.eventName} - ${event.collegeName}`;
+
+            eventSelect.appendChild(option);
+
+        });
+
+    } catch (error) {
+        console.error("Dropdown error:", error);
+    }
 
 }
 

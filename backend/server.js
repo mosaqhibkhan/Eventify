@@ -48,14 +48,14 @@ app.post("/add-event", async (req, res) => {
       });
     }
 
-    // 🔍 Check if event already exists
+    //  Check if event already exists
     let event = await Event.findOne({
       collegeName,
       eventName,
       date
     });
 
-    // ✅ IF EVENT DOES NOT EXIST → CREATE
+    //  IF EVENT DOES NOT EXIST → CREATE
     if (!event) {
       event = new Event({
         collegeName,
@@ -78,7 +78,7 @@ app.post("/add-event", async (req, res) => {
       });
     }
 
-    // ✅ EVENT EXISTS → CHECK IF USER ALREADY SUBMITTED
+    // EVENT EXISTS → CHECK IF USER ALREADY SUBMITTED
     const alreadySubmitted = event.submissions.find(
       s => s.email === submittedBy
     );
@@ -89,12 +89,12 @@ app.post("/add-event", async (req, res) => {
       });
     }
 
-    // ✅ ADD NEW SUBMISSION
+    //  ADD NEW SUBMISSION
     event.submissions.push({ email: submittedBy });
 
     await event.save();
 
-    // 🏆 REWARD TOP 3
+    //  REWARD TOP 3
     const position = event.submissions.length;
 
     let reward = 0;
@@ -141,7 +141,7 @@ message:"All fields are required"
 }
 
 const offer = new Offer({
-eventId,
+eventId: String(eventId),
 businessName,
 offerDetails
 });
@@ -175,7 +175,7 @@ app.get("/offers/:eventId", async (req,res)=>{
 try{
 
 const offers = await Offer.find({
-eventId:req.params.eventId
+  eventId: String(req.params.eventId)
 });
 
 res.json(offers);
@@ -382,7 +382,7 @@ const trending = await Offer.aggregate([
 
 {
 $group:{
-_id:"$eventId",
+_id: { $toString: "$eventId" },
 offersCount:{$sum:1}
 }
 },
