@@ -338,6 +338,58 @@ async function loadProfile() {
 
 loadProfile();
 
+/* =========================
+Leader Board
+========================= */
+
+async function loadLeaderboard() {
+
+    const container = document.getElementById("leaderboardList");
+    if (!container) return;
+
+    try {
+
+        const response = await fetch(`${API_URL}/event-leaderboard`);
+        const events = await response.json();
+
+        container.innerHTML = "";
+
+        events.forEach(event => {
+
+            const div = document.createElement("div");
+            div.className = "eventCard";
+
+            let leaderboardHTML = "";
+
+            event.leaderboard.forEach(user => {
+
+                const medal =
+                    user.position === 1 ? "🥇" :
+                    user.position === 2 ? "🥈" :
+                    user.position === 3 ? "🥉" : "";
+
+                leaderboardHTML += `
+                    <p>${medal} ${user.email} (${user.points} pts)</p>
+                `;
+            });
+
+            div.innerHTML = `
+                <h3>${event.eventName}</h3>
+                <p>${event.collegeName}</p>
+                ${leaderboardHTML}
+            `;
+
+            container.appendChild(div);
+
+        });
+
+    } catch (error) {
+        console.error(error);
+    }
+
+}
+
+loadLeaderboard();
 
 /* =========================
 LOGOUT

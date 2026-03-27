@@ -440,6 +440,55 @@ message:"Error loading trending events"
 
 
 /* =============================
+   EVENT-WISE LEADERBOARD
+============================= */
+
+app.get("/event-leaderboard", async (req, res) => {
+
+  try {
+
+    const events = await Event.find();
+
+    const result = [];
+
+    for (let event of events) {
+
+      const top3 = event.submissions.slice(0, 3);
+
+      const leaderboard = [];
+
+      for (let i = 0; i < top3.length; i++) {
+
+        const user = await User.findOne({ email: top3[i].email });
+
+        leaderboard.push({
+          position: i + 1,
+          email: top3[i].email,
+          points: user?.points || 0
+        });
+
+      }
+
+      result.push({
+        eventName: event.eventName,
+        collegeName: event.collegeName,
+        leaderboard
+      });
+
+    }
+
+    res.json(result);
+
+  } catch (error) {
+    console.error("Event leaderboard error:", error);
+    res.status(500).json({
+      message: "Error loading event leaderboard"
+    });
+  }
+
+});
+
+/* =============================
    START SERVER
 ============================= */
 
