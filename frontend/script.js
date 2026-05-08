@@ -107,7 +107,7 @@ async function loginUser(role) {
   }
 }
 
-/* ========================= SIGNUP WITH AUTO LOGIN (FINAL FIX) ========================= */
+/* ========================= SIGNUP WITH AUTO LOGIN  ========================= */
 const studentSignupBtn = document.getElementById("studentSignup");
 const businessSignupBtn = document.getElementById("businessSignup");
 

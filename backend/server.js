@@ -16,9 +16,7 @@ app.use(express.json());
    MongoDB Connection
 ============================= */
 
-const MONGO_URI =
-process.env.MONGO_URI ||
-"mongodb+srv://eventifyadmin:eventify123@cluster0.uhbp5cg.mongodb.net/eventify?retryWrites=true&w=majority";
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://eventifyadmin:eventify123@cluster0.uhbp5cg.mongodb.net/eventify?retryWrites=true&w=majority";
 
 mongoose.connect(MONGO_URI)
 .then(()=>console.log("MongoDB Connected"))
